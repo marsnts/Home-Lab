@@ -30,3 +30,6 @@
 
 You can install the Ubuntu Server 26.04 LTS image file using this [link](https://ubuntu.com/download/server) and use [rufus](https://rufus.ie/en/) and [balenaEtcher](https://etcher.balena.io/) to flash the image file into the USB flashdrive for installation.
 
+
+TEST
+
