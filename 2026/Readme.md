@@ -78,3 +78,75 @@ And add the following line to the sudoers list.
 <name> ALL = NOPASSWD : ALL
 ```
 This means the user `<name>` can skip the password check for all tasks.
+
+###### Logging in with SSH-Key
+
+If you currently do not have an SSH Key on your computer, you can generate it with the keygen command.
+```
+ssh-keygen
+```
+
+You will be asked if you wanted to choose a password for your SSH key. This is optional and you can leave it blank.
+
+At the end, copy your public key to your server:
+```
+ssh-copy-id -i ~/.ssh/id_rsa.pub <name>@<IP address>
+```
+*Note: `id_ed25519` and `id_rsa` is a Private key; you should not share this file. While `id_ed25519.pub` and `id_rsa.pub` is a Public Key; it is safe to share. `id_rsa` can be encountered in older machines while `id_ed25519` can be found in modern machines.*
+
+Then enter your password. Then you can always login to your server without password.
+
+###### Disabling root login
+
+Disabling direct root login prohibits hackers or non-authorized personnel from accessing the root. It forces individuals to log in with a normal user and use `sudo` to do administrative tasks. We can disable root login thru ssh by editing `sshd_config` file.
+
+```
+sudo nano /etc/ssh/sshd_config
+```
+
+Review the file and look for the `PermitRootLogin` line.
+```
+PermitRootLogin yes
+```
+change `yes` to `no`
+```
+PermitRootLogin no
+```
+Save and close the file and restart sshd daemon to read the modified configuration.
+```
+sudo systemctl restart sshd
+```
+
+###### Firewall
+
+Firewalld is installed by default in Ubuntu 26.04 LTS but you can always manually install firewalld.
+```
+sudo apt install firewalld
+```
+Then enable firewall services and it will automatically start at boot.
+```
+sudo systemctl enable firewalld
+```
+Verify if firewall service is running and reachable.
+```
+sudo firewall-cmd --state
+```
+It should display:
+```
+running
+```
+
+To allow traffic of HTTP and HTTPS for interfaces in the "public" zone.
+```
+sudo firewall-cmd --zone=public --permanent --add-service=http
+sudo firewall-cmd --zone=public --permanent --add-service=https
+sudo firewall-cmd --reload
+```
+Verify if HTTP and HTTPS traffic is allowed.
+```
+sudo firewall-cmd --zone=public --permanent --list-services
+```
+It should display:
+```
+dhcpv6-client http https ssh
+```
